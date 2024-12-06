@@ -1,4 +1,4 @@
-const { default: axios } = require("axios");
+import axios from "axios";
 
 let request = axios.create({
     baseURL: import.meta.env.VITE_SERVER,
@@ -6,14 +6,14 @@ let request = axios.create({
 });
 
 // 添加请求拦截器
-http.interceptors.request.use((config) => {
+request.interceptors.request.use((config) => {
     return config
 }, (error) => {
     return Promise.reject(error)
 })
 
 // 添加响应拦截器
-http.interceptors.response.use((response) => {
+request.interceptors.response.use((response) => {
     // 2xx 范围内的状态码都会触发该函数。
     // 对响应数据做点什么
     return response.data

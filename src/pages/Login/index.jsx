@@ -1,14 +1,21 @@
 import React, { useState } from 'react'
 import './index.scss'
-import { Card, Form, Input, Button } from 'antd'
+import { Card, Form, Input, Button, message } from 'antd'
 import logo from '@/assets/logo.png'
+import { useDispatch } from 'react-redux';
+import { login } from '@/store/modules/user';
+import { useNavigate } from 'react-router-dom';
 
 export default function Login() {
     const [phone, setPhone] = useState();
     const [code, setCode] = useState();
+    const dispatch = useDispatch();
+    const navi = useNavigate();
 
-    let handleLogin = (val) => {
-        console.log(val);
+    let handleLogin = async (val) => {
+        await dispatch(login(val));
+        navi('/');
+        message.success('登录成功');
     };
 
     return (
