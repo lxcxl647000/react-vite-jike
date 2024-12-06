@@ -1,15 +1,18 @@
 // 用户相关的状态管理//
 import { requestLogin } from "@/apis/user";
+import { GET_TOKEN, SET_TOKEN } from "@/utils";
 import { createSlice } from "@reduxjs/toolkit";
 
 let store = createSlice({
     name: 'user',
     initialState: {
-        token: ''
+        token: GET_TOKEN() || ''
     },
     reducers: {
         setToken(state, action) {
             state.token = action.payload;
+            // 本地持久化token//
+            SET_TOKEN(action.payload);
         }
     }
 });
