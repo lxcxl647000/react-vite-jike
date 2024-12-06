@@ -1,4 +1,5 @@
 import axios from "axios";
+import { GET_TOKEN } from "./token";
 
 let request = axios.create({
     baseURL: import.meta.env.VITE_SERVER,
@@ -7,6 +8,11 @@ let request = axios.create({
 
 // 添加请求拦截器
 request.interceptors.request.use((config) => {
+    // 注入token//
+    let token = GET_TOKEN();
+    if (token) {
+        config.headers.Authorization = `Bearer ${token}`;
+    }
     return config
 }, (error) => {
     return Promise.reject(error)
