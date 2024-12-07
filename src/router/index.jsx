@@ -3,9 +3,6 @@ import Layout from "@/pages/Layout";
 import Login from "@/pages/Login";
 import AuthRoute from "@/components/AuthRoute";
 import { lazy, Suspense } from "react";
-// import Home from "@/pages/Home";
-// import Article from "@/pages/Article";
-// import Publish from "@/pages/Publish";
 
 const Home = lazy(() => import("@/pages/Home"));
 const Article = lazy(() => import("@/pages/Article"));
