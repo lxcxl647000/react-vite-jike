@@ -3,7 +3,7 @@ import './index.scss'
 import { Layout, Menu } from 'antd'
 import logo from '@/assets/logo.png'
 import { LoginOutlined, HomeOutlined, DiffOutlined, EditOutlined } from '@ant-design/icons'
-import { Outlet } from 'react-router-dom'
+import { Outlet, useLocation } from 'react-router-dom'
 import { useNavigate } from 'react-router-dom'
 
 export default function M_Layout() {
@@ -26,6 +26,8 @@ export default function M_Layout() {
         },
     ];
     const navi = useNavigate();
+    const location = useLocation();
+    const selectedKey = location.pathname;
 
 
     return (
@@ -45,7 +47,7 @@ export default function M_Layout() {
                     <Menu
                         theme="dark"
                         mode="inline"
-                        defaultSelectedKeys={['/home']}
+                        selectedKeys={[selectedKey]}
                         items={items}
                         onSelect={({ key }) => navi(key)}
                     />
