@@ -1,0 +1,34 @@
+.layout {
+    height: 100vh;
+    background-color: skyblue;
+
+    .header {
+        padding: 0;
+        display: flex;
+        justify-content: space-between;
+
+        .logo {
+            width: 200px;
+            height: 60px;
+        }
+
+        .info {
+            color: #fff;
+            padding-right: 20px;
+
+            .username {
+                margin-right: 20px;
+            }
+
+            .logout {
+                cursor: pointer;
+            }
+        }
+    }
+
+    .sec-layout {
+        .sider {
+            width: 200px;
+        }
+    }
+}
