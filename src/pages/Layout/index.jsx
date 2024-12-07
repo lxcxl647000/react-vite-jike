@@ -3,14 +3,15 @@ import './index.scss'
 import { Layout, Menu } from 'antd'
 import logo from '@/assets/logo.png'
 import { LoginOutlined, HomeOutlined, DiffOutlined, EditOutlined } from '@ant-design/icons'
+import { Outlet } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 
 export default function M_Layout() {
     const { Header, Sider, Content } = Layout;
-
     const items = [
         {
             label: '首页',
-            key: '/',
+            key: '/home',
             icon: <HomeOutlined />,
         },
         {
@@ -23,7 +24,8 @@ export default function M_Layout() {
             key: '/publish',
             icon: <EditOutlined />,
         },
-    ]
+    ];
+    const navi = useNavigate();
 
 
     return (
@@ -40,10 +42,17 @@ export default function M_Layout() {
             </Header>
             <Layout className='sec-layout'>
                 <Sider className='sider'>
-                    {/* <div className="demo-logo-vertical" /> */}
-                    <Menu theme="dark" mode="inline" defaultSelectedKeys={['/']} items={items} />
+                    <Menu
+                        theme="dark"
+                        mode="inline"
+                        defaultSelectedKeys={['/home']}
+                        items={items}
+                        onSelect={({ key }) => navi(key)}
+                    />
                 </Sider>
-                <Content className='content'>Content</Content>
+                <Content className='content'>
+                    <Outlet />
+                </Content>
             </Layout>
         </Layout>
     )
