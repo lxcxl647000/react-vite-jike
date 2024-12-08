@@ -17,10 +17,12 @@ export default function Publish() {
     const navi = useNavigate();
 
     //  上传封面//
-    const [fileList, setFileList] = useState([]);
+    // 暂存上传后的图片//
+    const cacheImageList = useRef([]);
+    const [imageList, setImageList] = useState([]);
     const handleChange = val => {
-        console.log((val))
-        setFileList(val.fileList);
+        cacheImageList.current = val.fileList;
+        setImageList(val.fileList);
     }
 
     // 发布文章//
@@ -29,7 +31,7 @@ export default function Publish() {
             ...val,
             cover: {
                 type: picCount,
-                imges: fileList.map(item => {
+                imges: imageList.map(item => {
                     if (item)
                         if (item.response) {
                             return item.response.data.url;
@@ -48,8 +50,15 @@ export default function Publish() {
     const handleChangeRadio = (val) => {
         let { target: { value } } = val;
         setPicCount(value);
-        while (fileList.length > value) {
-            fileList.pop();
+        if (value === 1) {
+            let list = cacheImageList.current[0] ? [cacheImageList.current[0]] : [];
+            setImageList(list);
+        }
+        else if (value === 3) {
+            setImageList(cacheImageList.current);
+        }
+        else {
+            setImageList([]);
         }
     };
 
@@ -129,7 +138,7 @@ export default function Publish() {
                             name='image'
                             action={"http://geek.itheima.net/v1_0/upload"}
                             listType="picture-card"
-                            fileList={fileList}
+                            fileList={imageList}
                             onChange={handleChange}
                             maxCount={picCount}
                         >
