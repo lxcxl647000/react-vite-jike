@@ -7,3 +7,11 @@ import { request } from "@/utils";
 export const getChannels = () => {
     return request.get('/channels');
 };
+
+/**
+ * 发布文章
+ * @param {*} data 
+ */
+export const publishArticle = (data) => {
+    request.post('/mp/articles', data);
+};

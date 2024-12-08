@@ -1,19 +1,56 @@
 import React, { useRef, useState } from 'react'
 import './index.scss'
-import { Card, Breadcrumb, Form, Input, Button, Select } from 'antd'
+import { Card, Breadcrumb, Form, Input, Button, Select, Radio, Upload, message } from 'antd'
+import { PlusOutlined } from '@ant-design/icons'
 import useChannel from '@/hooks/useChannel';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css'
+import { publishArticle } from '@/apis/article';
+import { useNavigate } from 'react-router-dom';
 
 export default function Publish() {
     const [titleInput, setTitleInput] = useState();
     const [selectChannel, setSelectChannel] = useState();
     const { channels } = useChannel();
     const quillRef = useRef();
+    const [picCount, setPicCount] = useState(0);
+    const navi = useNavigate();
+
+    //  上传封面//
+    const [fileList, setFileList] = useState([]);
+    const handleChange = val => {
+        console.log((val))
+        setFileList(val.fileList);
+    }
 
     // 发布文章//
-    const onPublish = (val) => {
-        console.log(val);
+    const onPublish = async (val) => {
+        const data = {
+            ...val,
+            cover: {
+                type: picCount,
+                imges: fileList.map(item => {
+                    if (item)
+                        if (item.response) {
+                            return item.response.data.url;
+                        }
+                        else {
+                            return item.url;
+                        }
+                })
+            }
+        }
+        await publishArticle(data);
+        navi('/article');
+        message.success('发布成功');
+    };
+
+    const handleChangeRadio = (val) => {
+        let { target: { value } } = val;
+        setPicCount(value);
+        while (fileList.length > value) {
+            fileList.pop();
+        }
     };
 
     return (
@@ -74,6 +111,30 @@ export default function Publish() {
                             value={selectChannel}
                             onChange={(val) => setSelectChannel(val)}
                         />
+                    </Form.Item>
+                    <Form.Item label='封面'>
+                        <Form.Item>
+                            <Radio.Group
+                                name='type'
+                                value={picCount}
+                                onChange={handleChangeRadio}
+                                defaultValue={0}
+                            >
+                                <Radio value={1}>单图</Radio>
+                                <Radio value={3}>三图</Radio>
+                                <Radio value={0}>无图</Radio>
+                            </Radio.Group>
+                        </Form.Item>
+                        {picCount > 0 && <Upload
+                            name='image'
+                            action={"http://geek.itheima.net/v1_0/upload"}
+                            listType="picture-card"
+                            fileList={fileList}
+                            onChange={handleChange}
+                            maxCount={picCount}
+                        >
+                            <PlusOutlined />
+                        </Upload>}
                     </Form.Item>
                     <Form.Item
                         label="内容"
