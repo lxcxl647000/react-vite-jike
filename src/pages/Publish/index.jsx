@@ -27,6 +27,10 @@ export default function Publish() {
 
     // 发布文章//
     const onPublish = async (val) => {
+        if (picCount !== imageList.length) {
+            message.warning('上传数量和类型不一致');
+            return;
+        }
         const data = {
             ...val,
             cover: {
