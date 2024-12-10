@@ -5,9 +5,13 @@ import router from './router/index.jsx'
 import store from './store'
 import { Provider } from 'react-redux'
 import 'normalize.css'
+import { ConfigProvider } from 'antd';
+import locale from 'antd/locale/zh_CN';
 
 createRoot(document.getElementById('root')).render(
   <Provider store={store}>
-    <RouterProvider router={router} />
+    <ConfigProvider locale={locale}>
+      <RouterProvider router={router} />
+    </ConfigProvider>
   </Provider>
 )

@@ -1,12 +1,12 @@
-import React, { useRef, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import './index.scss'
 import { Card, Breadcrumb, Form, Input, Button, Select, Radio, Upload, message } from 'antd'
 import { PlusOutlined } from '@ant-design/icons'
 import useChannel from '@/hooks/useChannel';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css'
-import { publishArticle } from '@/apis/article';
-import { useNavigate } from 'react-router-dom';
+import { editArticle, getArticle, publishArticle } from '@/apis/article';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 
 export default function Publish() {
     const [titleInput, setTitleInput] = useState();
@@ -15,6 +15,10 @@ export default function Publish() {
     const quillRef = useRef();
     const [picCount, setPicCount] = useState(0);
     const navi = useNavigate();
+    const [searchParams] = useSearchParams();
+    // 需要编辑的文章id//
+    const editID = searchParams.get('id');
+    const [form] = Form.useForm();
 
     //  上传封面//
     // 暂存上传后的图片//
@@ -24,6 +28,37 @@ export default function Publish() {
         cacheImageList.current = val.fileList;
         setImageList(val.fileList);
     }
+
+    const getArticleByID = async (id) => {
+        const res = await getArticle(id);
+
+        let { title, channel_id, cover: { type, images } } = res.data;
+        /* 
+            因为 Form.Item 的 name 属性在使用 Ant Design 的表单时，
+            默认会与表单控件（如 Input）的值进行双向绑定。
+            当你给 Form.Item 加了 name 属性时，
+            表单会自动管理这个字段的值，并且会覆盖你手动传递给 Input 的 value。
+            所以使用 Form 的 setFieldsValue 方法来修改表单字段的值
+         */
+        form.setFieldsValue(
+            {
+                ...res.data,
+                type
+            }
+        );
+        setTitleInput(title);
+        setSelectChannel(channel_id);
+        setPicCount(type);
+        let imgs = images.map(url => ({ url }));
+        setImageList(imgs);
+        cacheImageList.current = imgs;
+    };
+
+    useEffect(() => {
+        if (editID) {
+            getArticleByID(editID);
+        }
+    }, []);
 
     // 发布文章//
     const onPublish = async (val) => {
@@ -35,7 +70,7 @@ export default function Publish() {
             ...val,
             cover: {
                 type: picCount,
-                imges: imageList.map(item => {
+                images: imageList.map(item => {
                     if (item)
                         if (item.response) {
                             return item.response.data.url;
@@ -46,9 +81,9 @@ export default function Publish() {
                 })
             }
         }
-        await publishArticle(data);
+        editID ? await editArticle(editID, data) : await publishArticle(data);
         navi('/article');
-        message.success('发布成功');
+        editID ? message.success('编辑成功') : message.success('发布成功');
     };
 
     const handleChangeRadio = (val) => {
@@ -85,6 +120,7 @@ export default function Publish() {
                 }
             >
                 <Form
+                    form={form}
                     className='form'
                     labelCol={{ span: 4 }}
                     onFinish={onPublish}
@@ -167,10 +203,10 @@ export default function Publish() {
                         />
                     </Form.Item>
                     <Form.Item wrapperCol={{ offset: 4 }}>
-                        <Button type="primary" size="large" htmlType='submit'>发布文章</Button>
+                        <Button type="primary" size="large" htmlType='submit'>{editID ? '编辑文章' : '发布文章'}</Button>
                     </Form.Item>
                 </Form>
             </Card>
-        </div>
+        </div >
     )
 }
